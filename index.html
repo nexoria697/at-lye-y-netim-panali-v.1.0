@@ -1,0 +1,801 @@
+
+
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Atölye ve Proje Yönetim Paneli</title>
+    <style>
+        :root {
+            --bg-color: #121824;
+            --card-bg: #1e293b;
+            --text-color: #f8fafc;
+            --text-muted: #94a3b8;
+            --primary: #3b82f6;
+            --primary-hover: #2563eb;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+            --border-color: #334155;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            padding: 20px;
+            line-height: 1.5;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-bottom: 20px;
+            border-bottom: 1px solid var(--border-color);
+            margin-bottom: 25px;
+        }
+
+        .header h1 {
+            font-size: 24px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        /* Dashboard Stats */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .stat-card {
+            background-color: var(--card-bg);
+            padding: 20px;
+            border-radius: 10px;
+            border-left: 5px solid var(--primary);
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        }
+
+        .stat-card.arıza { border-left-color: var(--warning); }
+        .stat-card.harcanan { border-left-color: var(--danger); }
+        .stat-card.kazanc { border-left-color: var(--success); }
+
+        .stat-label {
+            color: var(--text-muted);
+            font-size: 14px;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        .stat-value {
+            font-size: 24px;
+            font-weight: bold;
+            margin-top: 5px;
+        }
+
+        /* Forms Layout */
+        .forms-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(450px, 1fr));
+            gap: 25px;
+            margin-bottom: 30px;
+        }
+
+        @media (max-width: 500px) {
+            .forms-grid { grid-template-columns: 1fr; }
+        }
+
+        .form-container {
+            background-color: var(--card-bg);
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        }
+
+        .form-container h2 {
+            font-size: 18px;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        .form-group label {
+            display: block;
+            font-size: 14px;
+            margin-bottom: 5px;
+            color: var(--text-muted);
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 10px;
+            background-color: var(--bg-color);
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            color: var(--text-color);
+            font-size: 14px;
+        }
+
+        .form-control:focus {
+            outline: none;
+            border-color: var(--primary);
+        }
+
+        .radio-group {
+            display: flex;
+            gap: 15px;
+            margin-top: 5px;
+        }
+
+        .radio-option {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            cursor: pointer;
+        }
+
+        .btn {
+            width: 100%;
+            padding: 12px;
+            border: none;
+            border-radius: 6px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background 0.2s;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .btn-primary { background-color: var(--primary); color: white; }
+        .btn-primary:hover { background-color: var(--primary-hover); }
+        .btn-success { background-color: var(--success); color: white; }
+        .btn-success:hover { opacity: 0.9; }
+
+        /* Tables & Lists */
+        .list-container {
+            background-color: var(--card-bg);
+            padding: 25px;
+            border-radius: 12px;
+            margin-bottom: 30px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        }
+
+        .list-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .list-header h2 {
+            font-size: 18px;
+        }
+
+        .search-box {
+            padding: 8px 12px;
+            background-color: var(--bg-color);
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            color: var(--text-color);
+            width: 250px;
+        }
+
+        .table-responsive {
+            width: 100%;
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            text-align: left;
+            font-size: 14px;
+        }
+
+        th, td {
+            padding: 12px 15px;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        th {
+            background-color: rgba(0,0,0,0.2);
+            color: var(--text-muted);
+            font-weight: 600;
+        }
+
+        .badge {
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .badge-fikir { background-color: rgba(148, 163, 184, 0.2); color: #cbd5e1; }
+        .badge-yapim { background-color: rgba(59, 130, 246, 0.2); color: #93c5fd; }
+        .badge-bitti { background-color: rgba(16, 185, 129, 0.2); color: #6ee7b7; }
+        
+        .badge-bekliyor { background-color: rgba(239, 68, 68, 0.2); color: #fca5a5; }
+        .badge-tamirde { background-color: rgba(245, 158, 11, 0.2); color: #fde047; }
+        .badge-teslim { background-color: rgba(16, 185, 129, 0.2); color: #6ee7b7; }
+
+        .actions-cell {
+            display: flex;
+            gap: 8px;
+        }
+
+        .btn-action {
+            padding: 6px 10px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .btn-view { background-color: #475569; color: white; }
+        .btn-print { background-color: #0284c7; color: white; }
+        .btn-delete { background-color: var(--danger); color: white; }
+
+        /* Modal / Pop-up */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background-color: rgba(0,0,0,0.7);
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            padding: 20px;
+        }
+
+        .modal-content {
+            background-color: var(--card-bg);
+            padding: 25px;
+            border-radius: 12px;
+            max-width: 600px;
+            width: 100%;
+            position: relative;
+        }
+
+        .close-modal {
+            position: absolute;
+            top: 15px; right: 20px;
+            font-size: 24px;
+            cursor: pointer;
+            color: var(--text-muted);
+        }
+
+        .modal-body {
+            margin-top: 15px;
+        }
+
+        .modal-body p {
+            margin-bottom: 12px;
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 6px;
+        }
+
+        .modal-body strong {
+            color: var(--text-muted);
+            display: inline-block;
+            width: 140px;
+        }
+
+        /* Print Element styles (Hidden on screen) */
+        #print-section {
+            display: none;
+        }
+
+        /* PRINT STYLES */
+        @media print {
+            body * {
+                visibility: hidden;
+            }
+            #print-section, #print-section * {
+                visibility: visible;
+            }
+            #print-section {
+                display: block;
+                position: absolute;
+                top: 0; left: 0; width: 100%;
+                color: #000 !important;
+                background: #fff !important;
+                padding: 30px;
+                font-family: Arial, sans-serif;
+            }
+            .print-header {
+                text-align: center;
+                border-bottom: 2px solid #000;
+                padding-bottom: 15px;
+                margin-bottom: 25px;
+            }
+            .print-title {
+                font-size: 24px;
+                font-weight: bold;
+                text-transform: uppercase;
+            }
+            .print-date {
+                font-size: 12px;
+                margin-top: 5px;
+                color: #555;
+            }
+            .print-grid {
+                display: block;
+            }
+            .print-row {
+                margin-bottom: 15px;
+                font-size: 16px;
+                border-bottom: 1px dashed #ccc;
+                padding-bottom: 8px;
+            }
+            .print-row strong {
+                display: inline-block;
+                width: 180px;
+            }
+            .print-footer {
+                margin-top: 50px;
+                text-align: right;
+                font-weight: bold;
+                font-size: 14px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Üst Başlık -->
+    <div class="header">
+        <h1>🛠️ Atölye ve Proje Yönetim Paneli</h1>
+        <div>v1.0</div>
+    </div>
+
+    <!-- Özet Paneli (Dashboard) -->
+    <div class="stats-grid">
+        <div class="stat-card proje">
+            <div class="stat-label">Toplam Proje</div>
+            <div class="stat-value" id="total-projects">0</div>
+        </div>
+        <div class="stat-card arıza">
+            <div class="stat-label">Aktif Arıza Takibi</div>
+            <div class="stat-value" id="active-repairs">0</div>
+        </div>
+        <div class="stat-card harcanan">
+            <div class="stat-label">Toplam Proje Harcaması</div>
+            <div class="stat-value" id="total-spent">0.00 TL</div>
+        </div>
+        <div class="stat-card kazanc">
+            <div class="stat-label">Toplam Servis Kazancı</div>
+            <div class="stat-value" id="total-earned">0.00 TL</div>
+        </div>
+    </div>
+
+    <!-- Form Giriş Alanları -->
+    <div class="forms-grid">
+        <!-- Proje Ekleme Formu -->
+        <div class="form-container">
+            <h2>🚀 Yeni Proje Kaydet</h2>
+            <form id="project-form">
+                <div class="form-group">
+                    <label>Proje Adı</label>
+                    <input type="text" id="p-name" class="form-control" placeholder="Örn: AgroBot V1" required>
+                </div>
+                <div class="form-group">
+                    <label>Amacı / Açıklaması</label>
+                    <textarea id="p-aim" class="form-control" rows="2" placeholder="Projenin amacı nedir?" required></textarea>
+                </div>
+                <div class="form-group">
+                    <label>Çizim / Şematik Linki</label>
+                    <input type="url" id="p-drawing" class="form-control" placeholder="Görsel veya Drive linki (İsteğe bağlı)">
+                </div>
+                <div class="form-group">
+                    <label>Kullanılan Malzemeler</label>
+                    <input type="text" id="p-materials" class="form-control" placeholder="Örn: ESP32, MPU6050, Motor Sürücü">
+                </div>
+                <div class="form-group">
+                    <label>Toplam Harcanan Tutar (TL)</label>
+                    <input type="number" id="p-cost" class="form-control" min="0" step="0.01" placeholder="0.00" required>
+                </div>
+                <div class="form-group">
+                    <label>Başlangıç Tarihi</label>
+                    <input type="date" id="p-date" class="form-control" required>
+                </div>
+                <div class="form-group">
+                    <label>Durum</label>
+                    <div class="radio-group">
+                        <label class="radio-option"><input type="radio" name="p-status" value="fikir" checked> Fikir</label>
+                        <label class="radio-option"><input type="radio" name="p-status" value="yapim"> Yapım</label>
+                        <label class="radio-option"><input type="radio" name="p-status" value="bitti"> Bitti</label>
+                    </div>
+                </div>
+                <button type="submit" class="btn btn-primary">💾 Projeyi Kaydet</button>
+            </form>
+        </div>
+
+        <!-- Arıza Ekleme Formu -->
+        <div class="form-container">
+            <h2>🔧 Yeni Arıza Kaydı Ekle</h2>
+            <form id="repair-form">
+                <div class="form-group">
+                    <label>Müşteri / Cihaz Sahibi Adı</label>
+                    <input type="text" id="r-customer" class="form-control" placeholder="Ad Soyad" required>
+                </div>
+                <div class="form-group">
+                    <label>Cihaz / Sistem Adı</label>
+                    <input type="text" id="r-device" class="form-control" placeholder="Örn: Güç Kaynağı, Drone" required>
+                </div>
+                <div class="form-group">
+                    <label>Arıza Nedeni / Şikayet</label>
+                    <input type="text" id="r-reason" class="form-control" placeholder="Cihaz neden çalışmıyor?" required>
+                </div>
+                <div class="form-group">
+                    <label>Yapılan İşlem</label>
+                    <input type="text" id="r-action" class="form-control" placeholder="Ne müdahale yapıldı?">
+                </div>
+                <div class="form-group">
+                    <label>Değişen Parçalar</label>
+                    <input type="text" id="r-parts" class="form-control" placeholder="Değişen komponentler">
+                </div>
+                <div class="form-group">
+                    <label>Servis Tutar / Kazanç (TL)</label>
+                    <input type="number" id="r-earnings" class="form-control" min="0" step="0.01" placeholder="0.00" required>
+                </div>
+                <div class="form-group">
+                    <label>Tarih</label>
+                    <input type="date" id="r-date" class="form-control" required>
+                </div>
+                <div class="form-group">
+                    <label>Durum</label>
+                    <div class="radio-group">
+                        <label class="radio-option"><input type="radio" name="r-status" value="bekliyor" checked> Bekliyor</label>
+                        <label class="radio-option"><input type="radio" name="r-status" value="tamirde"> Tamirde</label>
+                        <label class="radio-option"><input type="radio" name="r-status" value="teslim"> Teslim Edildi</label>
+                    </div>
+                </div>
+                <button type="submit" class="btn btn-success">💾 Arıza Kaydını Ekle</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Projeler Tablosu -->
+    <div class="list-container">
+        <div class="list-header">
+            <h2>📂 Kayıtlı Projeler</h2>
+            <input type="text" id="search-projects" class="search-box" placeholder="Proje Ara...">
+        </div>
+        <div class="table-responsive">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Proje Adı</th>
+                        <th>Tarih</th>
+                        <th>Harcama</th>
+                        <th>Durum</th>
+                        <th>İşlemler</th>
+                    </tr>
+                </thead>
+                <tbody id="projects-table-body">
+                    <!-- Dinamik Eklenecek -->
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Arızalar Tablosu -->
+    <div class="list-container">
+        <div class="list-header">
+            <h2>⚡ Arıza & Teknik Servis Kayıtları</h2>
+            <input type="text" id="search-repairs" class="search-box" placeholder="Arıza/Müşteri Ara...">
+        </div>
+        <div class="table-responsive">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Cihaz / Müşteri</th>
+                        <th>Tarih</th>
+                        <th>Değişen Parça</th>
+                        <th>Servis Tutarı</th>
+                        <th>Durum</th>
+                        <th>İşlemler</th>
+                    </tr>
+                </thead>
+                <tbody id="repairs-table-body">
+                    <!-- Dinamik Eklenecek -->
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Detay Görünüm Modalı -->
+    <div class="modal" id="details-modal">
+        <div class="modal-content">
+            <span class="close-modal" onclick="closeModal()">&times;</span>
+            <h2 id="modal-title" style="margin-bottom:15px;">Kayıt Detayı</h2>
+            <div class="modal-body" id="modal-body-content">
+                <!-- Dinamik Doldurulacak -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Yazıcı Çıktı Tasarım Şablonu (Gizli Element) -->
+    <div id="print-section"></div>
+
+    <script>
+        // Veritabanı Modeli (LocalStorage)
+        let data = JSON.parse(localStorage.getItem('atolyepanel_db')) || {
+            projects: [],
+            repairs: []
+        };
+
+        // Uygulama Başlangıcı
+        document.addEventListener('DOMContentLoaded', () => {
+            // Tarih alanlarına bugünün tarihini otomatik ata
+            const today = new Date().toISOString().split('T')[0];
+            document.getElementById('p-date').value = today;
+            document.getElementById('r-date').value = today;
+
+            updateDashboard();
+            renderProjects();
+            renderRepairs();
+
+            // Form Event Dinleyicileri
+            document.getElementById('project-form').addEventListener('submit', addProject);
+            document.getElementById('repair-form').addEventListener('submit', addRepair);
+
+            // Arama Kutusu Dinleyicileri
+            document.getElementById('search-projects').addEventListener('input', renderProjects);
+            document.getElementById('search-repairs').addEventListener('input', renderRepairs);
+        });
+
+        function saveToStorage() {
+            localStorage.setItem('atolyepanel_db', JSON.stringify(data));
+            updateDashboard();
+        }
+
+        // Hesaplamalar ve Dashboard Güncelleme
+        function updateDashboard() {
+            document.getElementById('total-projects').innerText = data.projects.length;
+            
+            const activeRepairsCount = data.repairs.filter(r => r.status !== 'teslim').length;
+            document.getElementById('active-repairs').innerText = activeRepairsCount;
+
+            const totalSpent = data.projects.reduce((sum, p) => sum + parseFloat(p.cost || 0), 0);
+            document.getElementById('total-spent').innerText = totalSpent.toLocaleString('tr-TR', { style: 'currency', currency: 'TRY' });
+
+            const totalEarned = data.repairs.reduce((sum, r) => sum + parseFloat(r.earnings || 0), 0);
+            document.getElementById('total-earned').innerText = totalEarned.toLocaleString('tr-TR', { style: 'currency', currency: 'TRY' });
+        }
+
+        // Yeni Proje Ekleme
+        function addProject(e) {
+            e.preventDefault();
+            const project = {
+                id: 'p_' + Date.now(),
+                name: document.getElementById('p-name').value,
+                aim: document.getElementById('p-aim').value,
+                drawing: document.getElementById('p-drawing').value,
+                materials: document.getElementById('p-materials').value,
+                cost: parseFloat(document.getElementById('p-cost').value),
+                date: document.getElementById('p-date').value,
+                status: document.querySelector('input[name="p-status"]:checked').value
+            };
+
+            data.projects.push(project);
+            saveToStorage();
+            renderProjects();
+            document.getElementById('project-form').reset();
+            document.getElementById('p-date').value = new Date().toISOString().split('T')[0];
+        }
+
+        // Yeni Arıza Ekleme
+        function addRepair(e) {
+            e.preventDefault();
+            const repair = {
+                id: 'r_' + Date.now(),
+                customer: document.getElementById('r-customer').value,
+                device: document.getElementById('r-device').value,
+                reason: document.getElementById('r-reason').value,
+                action: document.getElementById('r-action').value,
+                parts: document.getElementById('r-parts').value,
+                earnings: parseFloat(document.getElementById('r-earnings').value),
+                date: document.getElementById('r-date').value,
+                status: document.querySelector('input[name="r-status"]:checked').value
+            };
+
+            data.repairs.push(repair);
+            saveToStorage();
+            renderRepairs();
+            document.getElementById('repair-form').reset();
+            document.getElementById('r-date').value = new Date().toISOString().split('T')[0];
+        }
+
+        // Projeleri Ekrana Basma
+        function renderProjects() {
+            const tbody = document.getElementById('projects-table-body');
+            const searchKeyword = document.getElementById('search-projects').value.toLowerCase();
+            tbody.innerHTML = '';
+
+            const filtered = data.projects.filter(p => p.name.toLowerCase().includes(searchKeyword) || p.aim.toLowerCase().includes(searchKeyword));
+
+            if(filtered.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="5" style="text-align:center; color:var(--text-muted);">Kayıtlı proje bulunamadı.</td></tr>`;
+                return;
+            }
+
+            filtered.forEach(p => {
+                const tr = document.createElement('tr');
+                
+                let statusLabel = p.status === 'fikir' ? 'Fikir' : (p.status === 'yapim' ? 'Yapımda' : 'Bitti');
+                let formattedDate = p.date.split('-').reverse().join('.');
+
+                tr.innerHTML = `
+                    <td><strong>${p.name}</strong></td>
+                    <td>${formattedDate}</td>
+                    <td>${p.cost.toLocaleString('tr-TR')} TL</td>
+                    <td><span class="badge badge-${p.status}">${statusLabel}</span></td>
+                    <td class="actions-cell">
+                        <button class="btn-action btn-view" onclick="viewProject('${p.id}')">🔍 Gör</button>
+                        <button class="btn-action btn-print" onclick="printProject('${p.id}')">🖨️ Yazdır</button>
+                        <button class="btn-action btn-delete" onclick="deleteRecord('projects', '${p.id}')">🗑️</button>
+                    </td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
+        // Arızaları Ekrana Basma
+        function renderRepairs() {
+            const tbody = document.getElementById('repairs-table-body');
+            const searchKeyword = document.getElementById('search-repairs').value.toLowerCase();
+            tbody.innerHTML = '';
+
+            const filtered = data.repairs.filter(r => r.customer.toLowerCase().includes(searchKeyword) || r.device.toLowerCase().includes(searchKeyword));
+
+            if(filtered.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="6" style="text-align:center; color:var(--text-muted);">Kayıtlı arıza kaydı bulunamadı.</td></tr>`;
+                return;
+            }
+
+            filtered.forEach(r => {
+                const tr = document.createElement('tr');
+                
+                let statusLabel = r.status === 'bekliyor' ? 'Bekliyor' : (r.status === 'tamirde' ? 'Tamirde' : 'Teslim Edildi');
+                let formattedDate = r.date.split('-').reverse().join('.');
+
+                tr.innerHTML = `
+                    <td><strong>${r.device}</strong><br><small style="color:var(--text-muted)">${r.customer}</small></td>
+                    <td>${formattedDate}</td>
+                    <td>${r.parts || '-'}</td>
+                    <td>${r.earnings.toLocaleString('tr-TR')} TL</td>
+                    <td><span class="badge badge-${r.status}">${statusLabel}</span></td>
+                    <td class="actions-cell">
+                        <button class="btn-action btn-print" onclick="printRepair('${r.id}')">🖨️ Yazdır</button>
+                        <button class="btn-action btn-delete" onclick="deleteRecord('repairs', '${r.id}')">🗑️</button>
+                    </td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
+        // Kayıt Silme Fonksiyonu
+        function deleteRecord(type, id) {
+            if(confirm('Bu kaydı silmek istediğinize emin misiniz?')) {
+                data[type] = data[type].filter(item => item.id !== id);
+                saveToStorage();
+                if(type === 'projects') renderProjects();
+                if(type === 'repairs') renderRepairs();
+            }
+        }
+
+        // Proje Detay Görünümü Açma
+        function viewProject(id) {
+            const p = data.projects.find(item => item.id === id);
+            if(!p) return;
+
+            document.getElementById('modal-title').innerText = `🚀 ${p.name} - Detayları`;
+            let formattedDate = p.date.split('-').reverse().join('.');
+            let statusLabel = p.status === 'fikir' ? 'Fikir Aşamasında' : (p.status === 'yapim' ? 'Yapım Aşamasında' : 'Tamamlandı');
+
+            let content = `
+                <p><strong>Proje Adı:</strong> ${p.name}</p>
+                <p><strong>Amacı / Kapsamı:</strong> ${p.aim}</p>
+                <p><strong>Kullanılan Parçalar:</strong> ${p.materials || '-'}</p>
+                <p><strong>Toplam Harcanan:</strong> ${p.cost.toLocaleString('tr-TR')} TL</p>
+                <p><strong>Kayıt Tarihi:</strong> ${p.date.split('-').reverse().join('.')}</p>
+                <p><strong>Mevcut Durum:</strong> ${statusLabel}</p>
+                <p><strong>Şematik Bağlantısı:</strong> ${p.drawing ? `<a href="${p.drawing}" target="_blank" style="color:var(--primary)">Çizimi Aç 🔗</a>` : '-'}</p>
+            `;
+
+            document.getElementById('modal-body-content').innerHTML = content;
+            document.getElementById('details-modal').style.display = 'flex';
+        }
+
+        function closeModal() {
+            document.getElementById('details-modal').style.display = 'none';
+        }
+
+        // PROJE YAZDIRMA FONKSİYONU
+        function printProject(id) {
+            const p = data.projects.find(item => item.id === id);
+            if(!p) return;
+
+            let statusLabel = p.status === 'fikir' ? 'Fikir Aşamasında' : (p.status === 'yapim' ? 'Yapım Aşamasında' : 'Tamamlandı');
+            let formattedDate = p.date.split('-').reverse().join('.');
+
+            const printSection = document.getElementById('print-section');
+            printSection.innerHTML = `
+                <div class="print-header">
+                    <div class="print-title">PROJE TEKNİK DOKÜMANTASYON FORMU</div>
+                    <div class="print-date">Yazdırma Tarihi: ${new Date().toLocaleDateString('tr-TR')}</div>
+                </div>
+                <div class="print-grid">
+                    <div class="print-row"><strong>Proje Adı:</strong> ${p.name}</div>
+                    <div class="print-row"><strong>Kayıt/Başlangıç Tarihi:</strong> ${formattedDate}</div>
+                    <div class="print-row"><strong>Projenin Amacı ve Kapsamı:</strong><br><br>${p.aim}</div>
+                    <div class="print-row"><strong>Kullanılan Malzeme Listesi:</strong> ${p.materials || '-'}</div>
+                    <div class="print-row"><strong>Toplam Ar-Ge Maliyeti:</strong> ${p.cost.toLocaleString('tr-TR')} TL</div>
+                    <div class="print-row"><strong>Proje Durumu:</strong> ${statusLabel}</div>
+                    ${p.drawing ? `<div class="print-row"><strong>Şematik / Çizim Linki:</strong> ${p.drawing}</div>` : ''}
+                </div>
+                <div class="print-footer">
+                    İmza / Onay<br><br><br>__________________
+                </div>
+            `;
+            window.print();
+        }
+
+        // ARIZA YAZDIRMA FONKSİYONU
+        function printRepair(id) {
+            const r = data.repairs.find(item => item.id === id);
+            if(!r) return;
+
+            let statusLabel = r.status === 'bekliyor' ? 'Beklemede' : (r.status === 'tamirde' ? 'Tamir Aşamasında' : 'Teslim Edildi');
+            let formattedDate = r.date.split('-').reverse().join('.');
+
+            const printSection = document.getElementById('print-section');
+            printSection.innerHTML = `
+                <div class="print-header">
+                    <div class="print-title">TEKNİK SERVİS VE ARIZA KABUL FORMU</div>
+                    <div class="print-date">Form Tarihi: ${formattedDate} | Çıktı Tarihi: ${new Date().toLocaleDateString('tr-TR')}</div>
+                </div>
+                <div class="print-grid">
+                    <div class="print-row"><strong>Müşteri / Cihaz Sahibi:</strong> ${r.customer}</div>
+                    <div class="print-row"><strong>Cihaz / Sistem Bilgisi:</strong> ${r.device}</div>
+                    <div class="print-row"><strong>Bildirilen Arıza / Şikayet:</strong> ${r.reason}</div>
+                    <div class="print-row"><strong>Yapılan Teknik Müdahale:</strong> ${r.action || 'İşlem Belirtilmedi'}</div>
+                    <div class="print-row"><strong>Değişen Komponentler:</strong> ${r.parts || 'Parça Değişmedi'}</div>
+                    <div class="print-row"><strong>Servis İşlem Durumu:</strong> ${statusLabel}</div>
+                    <div class="print-row"><strong>Toplam Servis Ücreti:</strong> ${r.earnings.toLocaleString('tr-TR')} TL</div>
+                </div>
+                <div class="print-footer">
+                    Teknisyen / Atölye Sorumlusu<br><br><br>__________________
+                </div>
+            `;
+            window.print();
+        }
+    </script>
+</body>
+</html>
+Atolye_ve_Proje_Yoneticisi.html
+Atolye_ve_Proje_Yoneticisi.html görüntüleniyor.
